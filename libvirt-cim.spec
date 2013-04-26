@@ -1,13 +1,12 @@
 Summary:	CIM provider for libvirt
 Summary(pl.UTF-8):	Dostarczyciel CIM dla libvirt
 Name:		libvirt-cim
-Version:	0.6.1
+Version:	0.6.2
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 Source0:	ftp://libvirt.org/libvirt-cim/%{name}-%{version}.tar.bz2
-# Source0-md5:	168ce53e26e2ac4b9eb261a82adc2e34
-Patch0:		%{name}-make.patch
+# Source0-md5:	c3318c8291245cdee2307e8ce2aac9c7
 URL:		http://libvirt.org/CIM/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -39,7 +38,6 @@ wieloma platformamy poprzez pojedynczego dostarczyciela.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %{__libtoolize}
