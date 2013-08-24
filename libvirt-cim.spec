@@ -1,12 +1,12 @@
 Summary:	CIM provider for libvirt
 Summary(pl.UTF-8):	Dostarczyciel CIM dla libvirt
 Name:		libvirt-cim
-Version:	0.6.2
+Version:	0.6.3
 Release:	1
 License:	LGPL v2.1+
 Group:		Libraries
 Source0:	ftp://libvirt.org/libvirt-cim/%{name}-%{version}.tar.bz2
-# Source0-md5:	c3318c8291245cdee2307e8ce2aac9c7
+# Source0-md5:	6e5bea3a8bf9d3fca70b67498126f2e4
 URL:		http://libvirt.org/CIM/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -47,11 +47,14 @@ wieloma platformamy poprzez pojedynczego dostarczyciela.
 %{__automake}
 %configure \
 	--disable-silent-rules \
-	--disable-static
+	--disable-static \
+	--with-migrate_check_dir=%{_libdir}/libvirt-cim/extchecks \
+	--with-xen_emulator=%{_libdir}/xen/bin/qemu-dm
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT%{_libdir}/libvirt-cim/extchecks
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
@@ -76,6 +79,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libxkutil.so.0
 %{_libdir}/cmpi/libVirt_*.so*
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libvirt-cim.conf
+%dir %{_libdir}/libvirt-cim
+%dir %{_libdir}/libvirt-cim/extchecks
 %dir %{_datadir}/libvirt-cim
 %{_datadir}/libvirt-cim/*.mof
 %{_datadir}/libvirt-cim/*.registration
