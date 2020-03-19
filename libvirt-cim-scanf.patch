@@ -1,0 +1,123 @@
+--- libvirt-cim-0.6.3/libxkutil/misc_util.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/libxkutil/misc_util.c	2020-03-18 21:41:56.935179415 +0100
+@@ -671,7 +671,7 @@
+         char *tmp_pfx = NULL;
+         char *tmp_name = NULL;
+ 
+-        ret = sscanf(id, "%a[^:]:%a[^\n]", &tmp_pfx, &tmp_name);
++        ret = sscanf(id, "%m[^:]:%m[^\n]", &tmp_pfx, &tmp_name);
+         if (ret != 2) {
+                 ret = 0;
+                 goto out;
+--- libvirt-cim-0.6.3/libxkutil/device_parsing.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/libxkutil/device_parsing.c	2020-03-18 21:42:55.131536509 +0100
+@@ -1062,7 +1062,7 @@
+ {
+         int ret;
+ 
+-        ret = sscanf(devid, "%a[^/]/%a[^\n]", host, device);
++        ret = sscanf(devid, "%m[^/]/%m[^\n]", host, device);
+         if (ret != 2) {
+                 free(*host);
+                 free(*device);
+--- libvirt-cim-0.6.3/libxkutil/acl_parsing.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/libxkutil/acl_parsing.c	2020-03-18 21:43:20.709532155 +0100
+@@ -666,7 +666,7 @@
+ 
+         if ((filter == NULL) || (index == NULL))
+                 return 0;
+-        ret = sscanf(rule_id, "%as[^:]:%u", filter, index);
++        ret = sscanf(rule_id, "%ms[^:]:%u", filter, index);
+         if (ret != 2) {
+                 free(*filter);
+                 *filter = NULL;
+--- libvirt-cim-0.6.3/src/Virt_Device.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/src/Virt_Device.c	2020-03-18 22:14:20.195872698 +0100
+@@ -661,7 +661,7 @@
+ {
+         int ret;
+ 
+-        ret = sscanf(devid, "%a[^/]/%as", dom, dev);
++        ret = sscanf(devid, "%m[^/]/%ms", dom, dev);
+         if (ret != 2) {
+                 free(*dom);
+                 free(*dev);
+--- libvirt-cim-0.6.3/src/Virt_DevicePool.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/src/Virt_DevicePool.c	2020-03-18 22:14:46.990601491 +0100
+@@ -405,7 +405,7 @@
+ {
+         int ret;
+ 
+-        ret = sscanf(line, "%as %as", &pool->tag, &pool->path);
++        ret = sscanf(line, "%ms %ms", &pool->tag, &pool->path);
+         if (ret != 2) {
+                 free(pool->tag);
+                 free(pool->path);
+@@ -1610,7 +1610,7 @@
+                 goto out;
+         }
+ 
+-        ret = sscanf(id, "%*[^/]/%a[^\n]", &poolid);
++        ret = sscanf(id, "%*[^/]/%m[^\n]", &poolid);
+         if (ret != 1) {
+                 cu_statusf(broker, &s,
+                            CMPI_RC_ERR_NOT_FOUND,
+--- libvirt-cim-0.6.3/src/Virt_ComputerSystemIndication.c.orig	2013-07-25 08:50:03.000000000 +0200
++++ libvirt-cim-0.6.3/src/Virt_ComputerSystemIndication.c	2020-03-19 06:06:35.230465605 +0100
+@@ -382,7 +382,7 @@
+                 goto out;
+         }
+ 
+-        rc = sscanf(tmp, "<name>%a[^<]s</name>", &name);
++        rc = sscanf(tmp, "<name>%m[^<]s</name>", &name);
+         if (rc != 1) {
+                 name = NULL;
+         }
+--- libvirt-cim-0.6.3/src/Virt_VirtualSystemManagementService.c.orig	2013-07-25 09:30:35.000000000 +0200
++++ libvirt-cim-0.6.3/src/Virt_VirtualSystemManagementService.c	2020-03-19 06:07:23.959651833 +0100
+@@ -1239,7 +1239,7 @@
+ 
+         CU_DEBUG("Entering parse_console_address, address is %s", id);
+ 
+-        ret = sscanf(id, "%a[^:]:%as", &tmp_path, &tmp_port);
++        ret = sscanf(id, "%m[^:]:%ms", &tmp_path, &tmp_port);
+ 
+         if (ret != 2) {
+                 ret = 0;
+@@ -1275,10 +1275,10 @@
+ 
+         CU_DEBUG("Entering parse_sdl_address, address is %s", id);
+ 
+-        ret = sscanf(id, "%a[^:]:%as", &tmp_xauth, &tmp_display);
++        ret = sscanf(id, "%m[^:]:%ms", &tmp_xauth, &tmp_display);
+ 
+         if (ret <= 0) {
+-                ret = sscanf(id, ":%as", &tmp_display);
++                ret = sscanf(id, ":%ms", &tmp_display);
+                 if (ret <= 0) {
+                         if (STREQC(id, ":")) {
+                                 /* do nothing, it is empty */
+@@ -1326,10 +1326,10 @@
+         CU_DEBUG("Entering parse_vnc_address, address is %s", id);
+         if (strstr(id, "[") != NULL) {
+                 /* its an ipv6 address */
+-                ret = sscanf(id, "%a[^]]]:%as",  &tmp_ip, &tmp_port);
++                ret = sscanf(id, "%m[^]]]:%ms",  &tmp_ip, &tmp_port);
+                 strcat(tmp_ip, "]");
+         } else {
+-                ret = sscanf(id, "%a[^:]:%as", &tmp_ip, &tmp_port);
++                ret = sscanf(id, "%m[^:]:%ms", &tmp_ip, &tmp_port);
+         }
+ 
+         if (ret != 2) {
+--- libvirt-cim-0.6.3/src/Virt_SettingsDefineState.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/src/Virt_SettingsDefineState.c	2020-03-19 06:08:48.530691279 +0100
+@@ -298,7 +298,7 @@
+                 goto out;
+         }
+ 
+-        ret = sscanf(id, "%a[^:]:%as", &pfx, &name);
++        ret = sscanf(id, "%m[^:]:%ms", &pfx, &name);
+         if (ret != 2) {
+                 cu_statusf(_BROKER, &s,
+                            CMPI_RC_ERR_FAILED,

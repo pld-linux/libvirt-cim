@@ -1,0 +1,45 @@
+--- libvirt-cim-0.6.3/src/Virt_HostSystem.c.orig	2013-07-25 08:39:32.000000000 +0200
++++ libvirt-cim-0.6.3/src/Virt_HostSystem.c	2020-03-18 22:13:37.787004348 +0100
+@@ -52,7 +52,8 @@
+         for (i = 0; he->h_aliases[i] != NULL; i++) {
+                if ((strchr(he->h_aliases[i], '.') != NULL) &&
+                    (strstr(he->h_aliases[i], "localhost") == NULL)) {
+-                           strncpy(buf, he->h_aliases[i], size);
++                           strncpy(buf, he->h_aliases[i], size-1);
++                           buf[size-1] = 0;
+                            return 0;
+                    }
+         }
+@@ -63,12 +64,14 @@
+         //          but also be sure the value isn't empty and that it doesn't
+         //          contain "localhost"
+         if ((he->h_name != NULL) && (!STREQC(he->h_name, "")) && 
+-            (strstr(he->h_name, "localhost") == NULL))
+-                strncpy(buf, he->h_name, size);
+-        else if ((host != NULL) && (!STREQC(host, "")) && 
+-                 (strstr(host, "localhost") == NULL))
++            (strstr(he->h_name, "localhost") == NULL)) {
++                strncpy(buf, he->h_name, size-1);
++                buf[size-1] = 0;
++	} else if ((host != NULL) && (!STREQC(host, "")) && 
++                 (strstr(host, "localhost") == NULL)) {
+                 strncpy(buf, host, size);
+-        else {
++                buf[size-1] = 0;
++	} else {
+                 CU_DEBUG("Unable to find valid hostname value.");
+                 return -1;
+         }
+@@ -86,9 +89,10 @@
+                 return -1;
+         }
+ 
+-        if (strchr(host, '.') != NULL)
++        if (strchr(host, '.') != NULL) {
+                 strncpy(buf, host, size);
+-        else
++                buf[size-1] = 0;
++	} else
+                 ret = resolve_host(host, buf, size);
+ 
+         return ret;
