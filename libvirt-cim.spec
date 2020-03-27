@@ -2,7 +2,7 @@ Summary:	CIM provider for libvirt
 Summary(pl.UTF-8):	Dostarczyciel CIM dla libvirt
 Name:		libvirt-cim
 Version:	0.6.3
-Release:	2
+Release:	3
 License:	LGPL v2.1+
 Group:		Libraries
 Source0:	ftp://libvirt.org/libvirt-cim/%{name}-%{version}.tar.bz2
